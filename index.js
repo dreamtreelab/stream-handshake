@@ -1,31 +1,23 @@
-const NodeMediaServer = require('node-media-server');
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
 
-const config = {
-  rtmp: {
-    port: 1935,
-    chunk_size: 60000,
-    gop_cache: true,
-    ping: 30,
-    ping_timeout: 60
-  },
-  http: {
-    port: 8080,
-    allow_origin: '*'
-  },
-  trans: {
-    ffmpeg: '/usr/bin/ffmpeg', // Railway has ffmpeg installed
-    tasks: [
-      {
-        app: 'live',
-        hls: true,
-        hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
-        dash: false
+let connections = [];
+
+wss.on('connection', ws => {
+  connections.push(ws);
+
+  ws.on('message', message => {
+    // Broadcast to all other clients
+    connections.forEach(client => {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(message);
       }
-    ]
-  }
-};
+    });
+  });
 
-const nms = new NodeMediaServer(config);
-nms.run();
+  ws.on('close', () => {
+    connections = connections.filter(c => c !== ws);
+  });
+});
 
-console.log("Node-Media-Server running...");
+console.log("Signaling server running on ws://0.0.0.0:8080");

@@ -1,12 +1,12 @@
 {
-  "name": "unity-stream-server",
+  "name": "unity-webrtc-signaling",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "dependencies": {
-    "node-media-server": "^2.6.0"
+    "ws": "^8.13.0"
   },
   "engines": {
     "node": ">=16"
