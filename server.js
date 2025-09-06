@@ -1,5 +1,7 @@
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8080 });
+const port = process.env.PORT || 8080;
+const wss = new WebSocket.Server({ port });
+console.log(`Signaling server running on ws://0.0.0.0:${port}`);
 
 let connections = [];
 
